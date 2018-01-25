@@ -22,12 +22,12 @@ def itemsFunction():
         print("Making a New item")
         ##pull from json data in post instead
         # name = request.args.get('name', '')
-        # name = request.json.get('name')
-        # description = request.json.get('description')
-        # print name
-        # print description
-        return 'hi'
-        # return makeANewItem(name, description)
+        name = request.json.get('name')
+        description = request.json.get('description')
+        print name
+        print description
+        # return 'hi'
+        return makeANewItem(name, description)
 
 
 def getAllItems():
