@@ -30,7 +30,7 @@ def itemsFunction():
         return getAllItems()
     elif request.method == 'POST':
         return makeANewItem(name, description, category)
-    elif request.method == 'PUT':
+    # elif request.method == 'PUT':
 
 
 @app.route('/users', methods = ['POST'])
