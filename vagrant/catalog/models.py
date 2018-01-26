@@ -30,6 +30,7 @@ class Item(Base):
 
 
     name = Column(String(80), nullable = False)
+    category = Column(String(80))
     id = Column(Integer, primary_key = True)
     description = Column(String(250))
 
@@ -38,6 +39,7 @@ class Item(Base):
        return {
           'id': self.id,
            'name': self.name,
+           'category': self.category,
            'description' : self.description
        }
 

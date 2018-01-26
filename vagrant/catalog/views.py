@@ -27,23 +27,28 @@ def itemsFunction():
         # name = request.args.get('name', '')
         name = request.json.get('name')
         description = request.json.get('description')
+        category = request.json.get('category')
         print name
-        print description
         # return 'hi'
-        return makeANewItem(name, description)
+        return makeANewItem(name, description, category)
 
 @app.route('/users', methods = ['POST'])
 def new_user():
     username = request.json.get('username')
+    print username
     password = request.json.get('password')
+    print password
     if username is None or password is None:
         print "missing arguments"
         abort(400)
 
-    if session.query(User).filter_by(username = username).first() is not None:
-        print "existing user"
-        user = session.query(User).filter_by(username=username).first()
-        return jsonify({'message':'user already exists'}), 200#, {'Location': url_for('get_user', id = user.id, _external = True)}
+    try:
+        if session.query(User).filter_by(username = username).first() is not None:
+            print "existing user"
+            user = session.query(User).filter_by(username=username).first()
+            return jsonify({'message':'user already exists'}), 200#, {'Location': url_for('get_user', id = user.id, _external = True)}
+    except:
+        print 'no users'
 
     user = User(username = username)
     user.hash_password(password)
@@ -61,12 +66,15 @@ def get_users():
 
 
 def getAllItems():
-    items = session.query(Item).all()
+    try:
+        items = session.query(Item).all()
+    except:
+        return ('no items')
     return jsonify(Items=[i.serialize for i in items])
 
 
-def makeANewItem(name, description):
-    item = Item(name=name, description=description)
+def makeANewItem(name, description, category):
+    item = Item(name=name, description=description, category=category)
     session.add(item)
     session.commit()
     return jsonify(Item=item.serialize)
