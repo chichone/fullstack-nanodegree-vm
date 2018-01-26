@@ -17,20 +17,21 @@ app = Flask(__name__)
 
 
 @app.route("/")
-@app.route("/api/items", methods=['GET', 'POST'])
+@app.route("/api/items", methods=['GET', 'POST', 'PUT', 'DELETE'])
 def itemsFunction():
-    if request.method == 'GET':
-        return getAllItems()
-    elif request.method == 'POST':
-        print("Making a New item")
-        ##pull from json data in post instead
-        # name = request.args.get('name', '')
+    try:
+        id = request.json.get('id')
         name = request.json.get('name')
         description = request.json.get('description')
         category = request.json.get('category')
-        print name
-        # return 'hi'
+    except:
+        print 'data not provided'
+    if request.method == 'GET':
+        return getAllItems()
+    elif request.method == 'POST':
         return makeANewItem(name, description, category)
+    elif request.method == 'PUT':
+
 
 @app.route('/users', methods = ['POST'])
 def new_user():
