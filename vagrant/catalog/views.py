@@ -15,36 +15,38 @@ session = DBSession()
 
 app = Flask(__name__)
 
-@app.route("/")
-@app.route("/api")
+
 @app.route("/api/")
 def allItemsFunction():
     return getAllItems()
 
 @app.route("/api/<int:id>")
 def oneItemFunction(id):
-    return getItem(id)
+    return jsonify(getItem(id).serialize)
 
 
 
 @app.route("/item/<int:id>", methods=['POST', 'PUT', 'DELETE'])
 def itemsFunction(id):
+    #debug
+
     try:
         print('idstart: ', id)
     except:
+        id = request.json.get('id')
         print('no starting id')
     try:
-        id = request.json.get('id')
         name = request.json.get('name')
         description = request.json.get('description')
+        #debug
+        print ('description: ', description)
         category = request.json.get('category')
     except:
         print 'data not provided'
 
-    try:
-        item = getItem(id)
-    except:
-        print('invalid item')
+    print ('givenId: ', id)
+    item = getItem(id)
+    print ('item: ', item.name)
 
     if request.method == 'POST':
         return makeANewItem(name, description, category)
@@ -61,6 +63,10 @@ def itemsFunction(id):
             item.category = category
         session.add(item)
         session.commit()
+        return jsonify(item.serialize)
+
+    else:
+        return deleteItem(id)
 
 
 @app.route("/users", methods = ['POST'])
@@ -104,12 +110,7 @@ def getAllItems():
     return jsonify(Items=[i.serialize for i in items])
 
 def getItem(id):
-    try:
-        item = session.query(Item).filter_by(id=id).one()
-    except:
-        return ('item not found')
-    print ("item: ", item)
-    return jsonify(item.serialize)
+    return session.query(Item).filter_by(id=id).one()
 
 
 def makeANewItem(name, description, category):
@@ -117,6 +118,13 @@ def makeANewItem(name, description, category):
     session.add(item)
     session.commit()
     return jsonify(Item=item.serialize)
+
+def deleteItem(id):
+    item = getItem(id)
+    session.delete(item)
+    session.commit()
+    return "Item Deleted"
+
 
 if __name__ == '__main__':
         app.debug = True
