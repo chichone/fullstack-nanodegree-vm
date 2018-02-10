@@ -15,10 +15,24 @@ session = DBSession()
 
 app = Flask(__name__)
 
-
 @app.route("/")
-@app.route("/api/items", methods=['GET', 'POST', 'PUT', 'DELETE'])
-def itemsFunction():
+@app.route("/api")
+@app.route("/api/")
+def allItemsFunction():
+    return getAllItems()
+
+@app.route("/api/<int:id>")
+def oneItemFunction(id):
+    return getItem(id)
+
+
+
+@app.route("/item/<int:id>", methods=['POST', 'PUT', 'DELETE'])
+def itemsFunction(id):
+    try:
+        print('idstart: ', id)
+    except:
+        print('no starting id')
     try:
         id = request.json.get('id')
         name = request.json.get('name')
@@ -26,14 +40,30 @@ def itemsFunction():
         category = request.json.get('category')
     except:
         print 'data not provided'
-    if request.method == 'GET':
-        return getAllItems()
-    elif request.method == 'POST':
+
+    try:
+        item = getItem(id)
+    except:
+        print('invalid item')
+
+    if request.method == 'POST':
         return makeANewItem(name, description, category)
-    # elif request.method == 'PUT':
+    #todo: fill in put and delete functionality
 
 
-@app.route('/users', methods = ['POST'])
+
+    elif request.method == 'PUT':
+        if name is not None:
+            item.name = name
+        if description is not None:
+            item.description = description
+        if category is not None:
+            item.category = category
+        session.add(item)
+        session.commit()
+
+
+@app.route("/users", methods = ['POST'])
 def new_user():
     username = request.json.get('username')
     print username
@@ -72,6 +102,14 @@ def getAllItems():
     except:
         return ('no items')
     return jsonify(Items=[i.serialize for i in items])
+
+def getItem(id):
+    try:
+        item = session.query(Item).filter_by(id=id).one()
+    except:
+        return ('item not found')
+    print ("item: ", item)
+    return jsonify(item.serialize)
 
 
 def makeANewItem(name, description, category):
