@@ -29,30 +29,20 @@ def oneItemFunction(id):
 @app.route("/item/<int:id>", methods=['POST', 'PUT', 'DELETE'])
 def itemsFunction(id):
     #debug
-
-    try:
-        print('idstart: ', id)
-    except:
-        id = request.json.get('id')
-        print('no starting id')
     try:
         name = request.json.get('name')
         description = request.json.get('description')
-        #debug
-        print ('description: ', description)
         category = request.json.get('category')
     except:
         print 'data not provided'
 
-    print ('givenId: ', id)
-    item = getItem(id)
-    print ('item: ', item.name)
+    try:
+        item = getItem(id)
+    except:
+        print 'item not found'
 
     if request.method == 'POST':
         return makeANewItem(name, description, category)
-    #todo: fill in put and delete functionality
-
-
 
     elif request.method == 'PUT':
         if name is not None:
