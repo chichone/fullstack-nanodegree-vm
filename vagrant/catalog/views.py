@@ -1,6 +1,6 @@
 from sqlalchemy import create_engine
 from models import Base, Item, User
-from flask import Flask, jsonify, request, url_for, abort, g
+from flask import Flask, jsonify, request, url_for, abort, g, render_template
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship, sessionmaker
 from flask.ext.httpauth import HTTPBasicAuth
@@ -15,6 +15,9 @@ session = DBSession()
 
 app = Flask(__name__)
 
+@app.route("/")
+def displaySplashPage():
+    return render_template('index.html')
 
 @app.route("/api/")
 def allItemsFunction():
