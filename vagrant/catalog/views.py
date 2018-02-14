@@ -19,6 +19,21 @@ app = Flask(__name__)
 def displaySplashPage():
     return render_template('index.html')
 
+@app.route("/login", methods=['GET', 'POST'])
+def loginPage():
+    if request.method == 'GET':
+        return render_template('login.html')
+    else:
+        return 'post'
+
+@app.route("/register")
+def registerPage():
+    return render_template('register.html')
+
+@app.route("/usercp")
+def userCP():
+    return render_template('usercp.html')
+
 @app.route("/api/")
 def allItemsFunction():
     return getAllItems()
@@ -30,6 +45,7 @@ def oneItemFunction(id):
 
 
 @app.route("/item/<int:id>", methods=['POST', 'PUT', 'DELETE'])
+@auth.login_required
 def itemsFunction(id):
     #debug
     try:
@@ -85,6 +101,14 @@ def new_user():
     session.add(user)
     session.commit()
     return jsonify({ 'username': user.username }), 201#, {'Location': url_for('get_user', id = user.id, _external = True)}
+
+@auth.verify_password
+def verify_password(username, password):
+    user = session.query(User).filter_by(username = username).first()
+    if not user or not user.verify_password(password):
+        return False
+    g.user = user
+    return True
 
 @app.route('/api/users')
 def get_users():

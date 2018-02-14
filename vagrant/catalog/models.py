@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, create_engine
+from sqlalchemy import Column, Integer, String, create_engine, ForeignKey
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship, sessionmaker
 from passlib.apps import custom_app_context as pwd_context
@@ -33,6 +33,8 @@ class Item(Base):
     category = Column(String(80))
     id = Column(Integer, primary_key = True)
     description = Column(String(250))
+    user_id = Column(Integer, ForeignKey('user.id'))
+    user = relationship(User)
 
     @property
     def serialize(self):
@@ -43,5 +45,5 @@ class Item(Base):
            'description' : self.description
        }
 
-engine = create_engine('sqlite:///items.db')
+engine = create_engine('sqlite:///itemswithusers.db')
 Base.metadata.create_all(engine)
