@@ -10,6 +10,7 @@ class User(Base):
     id = Column(Integer, primary_key=True)
     username = Column(String(32), index=True)
     password_hash = Column(String(64))
+    token = Column(String(255))
 
     def hash_password(self, password):
         self.password_hash = pwd_context.encrypt(password)
@@ -23,6 +24,7 @@ class User(Base):
           'id': self.id,
            'name': self.username,
        }
+
 
 ##Create an item class for our database
 class Item(Base):

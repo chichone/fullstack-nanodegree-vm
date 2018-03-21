@@ -3,3 +3,4 @@ __pycache__
 .vagrant
 /catalog/items.db
 /catalog/itemswithusers.db
+/catalog/client_secrets.json
