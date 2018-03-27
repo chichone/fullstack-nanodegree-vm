@@ -46,6 +46,7 @@
 <div id="result"></div>
 
 <script>
+
 function signInCallback(authResult) {
   if (authResult['code']) {
 
@@ -64,7 +65,7 @@ function signInCallback(authResult) {
         if (result) {
           $('#result').html('Login Successful!</br>'+ result + '</br>Redirecting...');
           setTimeout(function() {
-            window.location.href = "/usercp";
+            window.location.href = "/usercp?state={{STATE}}";
           }, 4000);
         } else if (authResult['error']) {
           console.log('There was an error: ' + authResult['error']);

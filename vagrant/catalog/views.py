@@ -27,10 +27,14 @@ session = DBSession()
 
 app = Flask(__name__)
 
-# @app.route("/")
-# def displaySplashPage():
-    ## if not logged in redirect to login
-    ## if logged in redirect to usercp
+@app.route('/')
+def splash():
+    urlOut = ('/login')
+    try:
+        urlOut += request.args['state']
+    except:
+        logging.info('no token')
+    return redirect(urlOut)
 
 @app.route('/gconnect', methods=['POST'])
 def gconnect():
@@ -42,6 +46,7 @@ def gconnect():
     # Obtain authorization code, now compatible with Python3
     request.get_data()
     code = request.data.decode('utf-8')
+
 
     try:
         # Upgrade the authorization code into a credentials object
@@ -123,6 +128,64 @@ def gconnect():
     flash("you are now logged in as %s" % login_session['username'])
     return output
 
+@app.route("/usercp")
+def userCP():
+    logging.info(login_session)
+    return render_template('usercp.html', STATE=request.args['state'])
+
+@app.route("/new", methods=['GET', 'POST'])
+def newItem():
+    infirst = 'a'
+    try:
+        stategiven = request.args['state']
+        infirst += request.args['state']
+    except:
+        logging.info('no state token')
+        return redirect('/login')
+
+    logging.info('state******************')
+    logging.info(stategiven)
+
+    logging.info(login_session['state'])
+    logging.info(stategiven == login_session['state'])
+
+    print(login_session)
+
+    if 'username' not in login_session:
+        flash("action requires login")
+        return redirect('/login')
+    else:
+        flash("logged in")
+
+    if request.method == 'GET':
+
+        return render_template('newItemForm.html', STATE=stategiven)
+
+    elif request.method == 'POST':
+
+        if stategiven != login_session['state']:
+            return redirect('/login')
+
+        request.get_data()
+        code = request.data.decode('utf-8')
+        logging.info('code')
+        logging.info(code)
+
+        def itemDecoder(raw_item):
+            arr = raw_item.split('&')
+            d = {}
+            for i in arr:
+                key, value = i.split('=')
+                d[key] = value
+            return d
+
+        decoded_item = itemDecoder(code)
+
+
+        makeANewItem(name = decoded_item['name'], description = decoded_item['description'], category = decoded_item['category'], user_id = login_session['user_id'])
+
+        return redirect('/api/items?state=' + stategiven)
+
 @app.route('/gdisconnect')
 def gdisconnect():
     failed = False
@@ -194,6 +257,7 @@ def gdisconnect():
         if failed == False:
             print("removed all")
 
+        logging.info(login_session)
         response = make_response(json.dumps('Successfully disconnected.'), 200)
         response.headers['Content-Type'] = 'application/json'
         return response
@@ -263,9 +327,7 @@ def showLogin():
     # return "The current session state is %s" % login_session['state']
     return render_template('login.html', STATE=state)
 
-@app.route("/usercp")
-def userCP():
-    return render_template('usercp.html', lsu=login_session['username'])
+
 
 @app.route("/api/items")
 def allItemsFunction():
@@ -278,27 +340,48 @@ def allItemsFunction():
 def oneItemFunction(id):
     return jsonify(getItem(id).serialize)
 
-@app.route("/new", methods=['GET', 'POST'])
-def newItem():
-    print(login_session)
 
-    if 'username' not in login_session:
-        flash("action requires login")
+@app.route("/item", methods=['GET', 'POST', 'PUT', 'DELETE'])
+def itemrt():
+    if request.method == 'GET':
+        itemrt = url_for('itemrt')
+        return render_template('editItem.html', itemrt = itemrt, STATE = request.args['state'])
+    return redirect('/login')
+
+
+@app.route("/item/<int:id>/modify", methods=['GET', 'PUT', 'DELETE'])
+def itemMod(id):
+    #debug
+    if login_session['state'] is None or login_session['username'] is None or login_session['user_id']  is None or login_session['access_token']  is None or request.args['state'] != login_session['state']:
+        print('missing credentials')
         return redirect('/login')
-    else:
-        flash("logged in")
 
     if request.method == 'GET':
+        return render_template('editItem.html', id=id, STATE=request.args['state'])
 
-        return render_template('newItemForm.html', lsu=login_session['username'])
+    try:
+        item = getItem(id)
+    except:
+        print 'item not found'
 
-    elif request.method == 'POST':
+    logging.info('****************&')
+    logging.info('item.user_id')
+
+    if item.user_id != login_session['user_id']:
+        make_response(
+            json.dumps('Unauthorized user information', 400))
+        response.headers['Content-Type'] = 'application/json'
+        return response
+
+    if request.method == 'PUT':
+        logging.info('in put')
+        stategiven = request.args['state']
+        if stategiven != login_session['state']:
+            logging.info('not matching')
+            return redirect('/login')
+
         request.get_data()
         code = request.data.decode('utf-8')
-
-        logging.info(code)
-
-        user_id = login_session['user_id']
 
         def itemDecoder(raw_item):
             arr = raw_item.split('&')
@@ -310,38 +393,19 @@ def newItem():
 
         decoded_item = itemDecoder(code)
 
-        makeANewItem(name = decoded_item['name'], description = decoded_item['description'], category = decoded_item['category'], user_id = user_id)
-
-        return redirect('/api/items')
-
-@app.route("/item/<int:id>", methods=['POST', 'PUT', 'DELETE'])
-def itemsFunction(id):
-    #debug
-    try:
-        name = request.json.get('name')
-        description = request.json.get('description')
-        category = request.json.get('category')
-    except:
-        print 'data not provided'
-
-    try:
-        item = getItem(id)
-    except:
-        print 'item not found'
-
-    if request.method == 'POST':
-        return makeANewItem(name, description, category)
-
-    elif request.method == 'PUT':
-        if name is not None:
-            item.name = name
-        if description is not None:
-            item.description = description
-        if category is not None:
-            item.category = category
+        logging.info('decoded_itemV')
+        logging.info(decoded_item)
+        logging.info('^decoded_itemb')
+        if decoded_item['name'] is not None:
+            item.name = decoded_item['name']
+        if decoded_item['description'] is not None:
+            item.description = decoded_item['description']
+        if decoded_item['category'] is not None:
+            item.category = decoded_item['category']
         session.add(item)
         session.commit()
-        return jsonify(item.serialize)
+        return ('hi')
+
 
     else:
         return deleteItem(id)

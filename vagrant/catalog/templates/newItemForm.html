@@ -1,9 +1,6 @@
 {% extends "usercp.html" %}
 {% block content %}
 {% include "header.html" %}
-  <div class="row divider green">
-    <div class="col-md-12"></div>
-  </div>
   <div class="row banner menu">
     <div class="col-md-11 col-md-offset-1 padding-none">
       <h1>New Item</h1>
@@ -11,7 +8,7 @@
   </div>
   <div class="row">
     <div class="col-md-6 col-md-offset-1 padding-top">
-      <form action="/new" method = "post">
+      <form action="/new?state={{STATE}}" method = "post">
         <div class="form-group">
 
         <label for="name">Name:</label>

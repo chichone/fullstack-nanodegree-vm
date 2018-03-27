@@ -1,0 +1,86 @@
+{% extends "usercp.html" %}
+{% block content %}
+{% include "header.html" %}
+
+  <form>
+  edit item - state: {{STATE}}
+   item id:<input type="text" id="number"><br>
+   item name:<input type="text" id="name"><br>
+   item category:<input type="text" id="category"><br>
+   item description:<input type="text" id="description"><br>
+   <span id="update">
+    <input type="button" value="update">
+    </span>
+   <span id="delete">
+    <input type="button" value="delete item">
+    </span>
+
+  </form>
+<script>
+
+
+var url_string = window.location.href;
+var urlbar = new URL(url_string);
+var statep = urlbar.searchParams.get("state");
+
+$("#delete").click(
+    function() {
+      console.log( "Handler for delete.click() called." );
+      let myUrl = '/item/' + $("#number").val() + '/modify';
+      $.ajax({
+        type: 'DELETE',
+        url: myUrl,
+        success: function(result){
+          if (result) {
+            console.log("successfully deleted");
+            var nextUrl = ""
+            setTimeout(function() {
+              if (statep.length){
+                nextUrl = "/api/items?state=" + statep
+              } else {
+                nextUrl = "/api/items"
+              }
+              window.location.href = nextUrl;
+            }, 4000);
+          }
+        }
+      });
+    }
+  );
+
+
+
+$("#update").click(
+    function() {
+      console.log( "Handler for update.click() called." );
+      var fields = {
+            name: $("#name").val(),
+            number: $("#number").val(),
+            category: $("#category").val(),
+            description: $("#description").val()
+          }
+      console.log(fields);
+      let myUrl = '/item/' + $("#number").val() + '/modify?state=' + statep;
+      $.ajax({
+        type: 'PUT',
+        url: myUrl,
+        data: fields,
+        success: function(data) {
+            console.log("successfully updated");
+            var nextUrl = ""
+            setTimeout(function() {
+              if (statep.length){
+                nextUrl = "/api/items?state=" + statep
+              } else {
+                nextUrl = "/api/items"
+              }
+              window.location.href = nextUrl;
+            }, 4000);
+
+        }
+      });
+    }
+  );
+
+</script>
+{% endblock %}

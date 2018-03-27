@@ -25,6 +25,7 @@ class User(Base):
           'id': self.id,
            'name': self.name,
            'email': self.email,
+           'token': self.token
        }
 
 
