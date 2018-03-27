@@ -8,7 +8,8 @@ Base = declarative_base()
 class User(Base):
     __tablename__ = 'user'
     id = Column(Integer, primary_key=True)
-    username = Column(String(32), index=True)
+    name = Column(String(32), index=True)
+    email = Column(String(250), nullable=False)
     password_hash = Column(String(64))
     token = Column(String(255))
 
@@ -22,7 +23,8 @@ class User(Base):
     def serialize(self):
       return {
           'id': self.id,
-           'name': self.username,
+           'name': self.name,
+           'email': self.email,
        }
 
 
@@ -35,7 +37,7 @@ class Item(Base):
     category = Column(String(80))
     id = Column(Integer, primary_key = True)
     description = Column(String(250))
-    user_id = Column(Integer, ForeignKey('user.id'))
+    user_id = Column(Integer, ForeignKey('user.id'), nullable = False)
     user = relationship(User)
 
     @property
@@ -44,7 +46,8 @@ class Item(Base):
           'id': self.id,
            'name': self.name,
            'category': self.category,
-           'description' : self.description
+           'description' : self.description,
+           'user_id' : self.user_id
        }
 
 engine = create_engine('sqlite:///itemswithusers.db')
