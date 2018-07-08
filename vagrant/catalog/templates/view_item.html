@@ -1,0 +1,20 @@
+{% extends "usercp.html" %}
+{% block content %}
+{% include "header.html" %}
+
+
+
+<br>
+<br>
+<h2>
+Item:
+</h2>
+<br>
+name:{{ITEM.name}}<br>
+category:{{ITEM.category}}<br>
+id:{{ITEM.id}}<br>
+description:{{ITEM.description}}<br>
+<br>
+<a href="/api/item/{{ITEM.id}}?state={{STATE}}">API version (JSON)</a>
+
+{% endblock %}

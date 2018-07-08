@@ -1,0 +1,18 @@
+{% extends "usercp.html" %}
+{% block content %}
+{% include "header.html" %}
+<br>
+
+
+<h1>Lookup Item by ID number</h1>
+<form action="/single_item">
+  <label for="number">Item ID#:</label>
+  <input type ="text" maxlength="9" name="id">
+  <input type = "hidden" name="state" value="{{STATE}}">
+  <button type="submit" class="btn btn-default" id="submit" type="submit">Submit
+  </button>
+</form>
+
+
+
+{% endblock %}

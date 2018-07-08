@@ -1,0 +1,24 @@
+{% extends "usercp.html" %}
+{% block content %}
+{% include "header.html" %}
+<h1>New Item:</h1>
+<form action="/new?state={{STATE}}" method = "post">
+
+  <label for="name">Name:</label>
+  <input type ="text" maxlength="80" name="name"><br>
+
+  <label for="category">Category:</label>
+  <input type ="text" maxlength="80" name="category"><br>
+
+
+  <label for="description">Description:</label>
+  <input type ="text" maxlength="250" name="description"><br>
+
+
+  <button type="submit" id="submit" type="submit">Create</button>
+</form>
+{% endblock %}
+
+
+
+

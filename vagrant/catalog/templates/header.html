@@ -1,0 +1,7 @@
+Item Catalog App <span style="float: right">logged in as {{LSU}}
+<a href='/gdisconnect'>[ Logout ]</a> </span><br><br>
+
+    <a href="{{url_for('newItem')}}?state={{STATE}}">create new item</a><br>
+    <a href="{{url_for('itemrt')}}?state={{STATE}}">modify/delete item</a><br>
+    <a href="/single_item?state={{STATE}}">view one item</a><br>
+    <a href="/api/items?state={{STATE}}">view all items</a><br>
