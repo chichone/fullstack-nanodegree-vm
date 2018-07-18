@@ -17,13 +17,15 @@ from oauth2client.client import FlowExchangeError
 from flask_httpauth import HTTPBasicAuth
 auth = HTTPBasicAuth()
 
-CLIENT_ID = json.loads(
-    open('client_secrets.json', 'r').read())['web']['client_id']
-APPLICATION_NAME = "Restaurant Menu App"
+CLIENT_ID = "504505631697-bpn5m1ibe7ffapu1g7a298dqagrqos1i.apps.googleusercontent.com"
+CLIENT_SECRET = "kIzMndqY0W9qpDEZkR9fbbpU"
+print(CLIENT_ID)
+print(CLIENT_SECRET)
+APPLICATION_NAME = "Udacity Catalog App"
 app = Flask(__name__)
 blueprint = make_google_blueprint(
     client_id=CLIENT_ID,
-    client_secret="WQyzM9XumxPoEBgBc43I8lIm",
+    client_secret= CLIENT_SECRET,
     scope=["profile", "email"]
 )
 app.register_blueprint(blueprint, url_prefix="/login")
@@ -62,6 +64,7 @@ def showLogin():
         login_session['access_token'] = login_session['state']
         return redirect(url_for("google.login"))
     resp = google.get("/oauth2/v2/userinfo")
+    print(resp.json())
     login_session['google'] = resp.json()
     login_session['username'] = resp.json()['name']
     login_session['email'] = resp.json()['email']
