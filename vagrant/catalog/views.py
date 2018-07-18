@@ -240,6 +240,7 @@ def oneItemForm():
 
 @app.route("/api/item/<int:id>")
 def oneItemFunction(id):
+    """Get information for an item with a given id"""
     return jsonify(getItem(id).serialize)
 
 
@@ -266,7 +267,7 @@ def itemrt():
 
 @app.route("/item/<int:id>/modify", methods=['GET', 'PUT', 'DELETE'])
 def itemMod(id):
-    """Modifies item in database"""
+    """Modifies item in database with a given id"""
 
     # retreive item from database
     try:
