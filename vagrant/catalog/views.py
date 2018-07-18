@@ -44,6 +44,7 @@ def splash():
     else:
         return preLogin()
 
+
 @app.route("/login")
 def preLogin():
     return render_template('login.html')
@@ -54,7 +55,8 @@ def showLogin():
     state = ''.join(
         random.choice(
             string.ascii_uppercase + string.digits) for x in range(32))
-    if (not login_session.get('state') or (not login_session.get('access_token'))):
+    if (not login_session.get('state') or (not login_session.get(
+        'access_token'))):
         login_session['state'] = state
         login_session['access_token'] = login_session['state']
         return redirect(url_for("google.login"))
