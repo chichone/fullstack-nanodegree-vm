@@ -3,36 +3,29 @@ import random
 import string
 import httplib2
 import json
-import os
-import requests
 from flask_dance.contrib.google import make_google_blueprint, google
 from sqlalchemy import create_engine
 from models import Base, Item, User
 from flask import Flask, redirect, jsonify, request
-from flask import abort, render_template, flash, make_response
+from flask import abort, render_template, make_response
 from flask import session as login_session, url_for
 from sqlalchemy.orm import sessionmaker
-from oauth2client.client import flow_from_clientsecrets
-from oauth2client.client import FlowExchangeError
 from flask_httpauth import HTTPBasicAuth
 auth = HTTPBasicAuth()
 
-CLIENT_ID = "504505631697-bpn5m1ibe7ffapu1g7a298dqagrqos1i.apps.googleusercontent.com"
-CLIENT_SECRET = "kIzMndqY0W9qpDEZkR9fbbpU"
-print(CLIENT_ID)
-print(CLIENT_SECRET)
+
 APPLICATION_NAME = "Udacity Catalog App"
 app = Flask(__name__)
 blueprint = make_google_blueprint(
-    client_id= json.loads(
-            open('client_secrets.json', 'r').read())['web']['client_id'],
-    client_secret= json.loads(
-            open('client_secrets.json', 'r').read())['web']['client_secret'],
+    client_id=json.loads(open('client_secrets.json',
+                         'r').read())['web']['client_id'],
+    client_secret=json.loads(open('client_secrets.json',
+                             'r').read())['web']['client_secret'],
     scope=["profile", "email"]
 )
 app.register_blueprint(blueprint, url_prefix="/login")
 
-#alternate logging system
+# alternate logging system
 
 logging.basicConfig(format='%(levelname)s:%(message)s', level=logging.ERROR)
 
