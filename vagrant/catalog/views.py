@@ -148,6 +148,7 @@ def gdisconnect():
 
 @app.route("/new", methods=['GET', 'POST'])
 def newItem():
+    """Add new item to catalog"""
     infirst = 'a'
     try:
         stategiven = request.args['state']
@@ -205,11 +206,13 @@ def newItem():
 
 @app.route("/api/items")
 def allItemsFunction():
+    """Retreives all items in database"""
     return getAllItems()
 
 
 @app.route('/single_item')
 def oneItemForm():
+    """Retreives data for single item in database"""
 
     lsu = ""
 
@@ -242,6 +245,7 @@ def oneItemFunction(id):
 
 @app.route("/item", methods=['GET', 'POST', 'PUT', 'DELETE'])
 def itemrt():
+    """Renders edit item template"""
     if request.method == 'GET':
 
         if request.args['state'] != login_session['state']:
@@ -262,8 +266,9 @@ def itemrt():
 
 @app.route("/item/<int:id>/modify", methods=['GET', 'PUT', 'DELETE'])
 def itemMod(id):
-    #retreive item from database
-    logging.info(request.method)
+    """Modifies item in database"""
+
+    # retreive item from database
     try:
         myItem = getItem(id)
     except:
@@ -330,6 +335,7 @@ def itemMod(id):
 
 @app.route("/users", methods=['POST'])
 def new_user():
+    """Creates new user"""
     username = request.json.get('username')
     password = request.json.get('password')
     if username is None or password is None:
@@ -352,6 +358,7 @@ def new_user():
 
 @app.route('/api/users')
 def get_users():
+    """Gets data for all users"""
     try:
         users = session.query(User).all()
     except:
