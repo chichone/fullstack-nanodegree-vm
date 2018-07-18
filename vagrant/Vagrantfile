@@ -48,8 +48,8 @@ Vagrant.configure("2") do |config|
     cd redis-stable
     make
     make install
-    export OAUTHLIB_INSECURE_TRANSPORT=1
-    export OAUTHLIB_RELAX_TOKEN_SCOPE=1
+    sudo export OAUTHLIB_INSECURE_TRANSPORT=1
+    sudo export OAUTHLIB_RELAX_TOKEN_SCOPE=1
 
     echo "Done installing your virtual machine!"
   SHELL

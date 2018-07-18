@@ -3,6 +3,7 @@ import random
 import string
 import httplib2
 import json
+import os
 from flask_dance.contrib.google import make_google_blueprint, google
 from sqlalchemy import create_engine
 from models import Base, Item, User
@@ -12,6 +13,9 @@ from flask import session as login_session, url_for
 from sqlalchemy.orm import sessionmaker
 from flask_httpauth import HTTPBasicAuth
 auth = HTTPBasicAuth()
+
+os.environ['OAUTHLIB_INSECURE_TRANSPORT'] = '1'
+os.environ['OAUTHLIB_RELAX_TOKEN_SCOPE'] = '1'
 
 
 APPLICATION_NAME = "Udacity Catalog App"
@@ -105,96 +109,40 @@ def gdisconnect():
     h = httplib2.Http()
     result = h.request(url, 'GET')[0]
 
-    logging.info("resultV")
-    logging.info(result)
-    logging.info("result^")
+    try:
+        del login_session['access_token']
+    except:
+        failed = True
+
+    try:
+        del login_session['username']
+    except:
+        failed = True
+
+    try:
+        del login_session['state']
+    except:
+        failed = True
+
+    try:
+        del login_session['user_id']
+    except:
+        failed = True
+
+    try:
+        del login_session['email']
+    except:
+        failed = True
+
+    if failed is True:
+        print('unable to remove all credentials')
 
     if result['status'] == '200':
-        # Reset the user's sesson.
-        try:
-            login_session['access_token'] = False
-            del login_session['access_token']
-
-        except:
-            failed = True
-
-        try:
-            del login_session['username']
-        except:
-            failed = True
-
-        try:
-            login_session['state'] = False
-            del login_session['state']
-        except:
-            failed = True
-
-        try:
-            del login_session['user_id']
-        except:
-            failed = True
-
-        try:
-            del login_session['gplus_id']
-        except:
-            failed = True
-
-        try:
-            del login_session['email']
-        except:
-            failed = True
-
-        if failed is True:
-            failed = True
-
-        if failed is False:
-            failed = False
-
         logging.info(login_session)
         response = make_response(json.dumps('Successfully disconnected.'), 200)
         response.headers['Content-Type'] = 'application/json'
         return preLogin()
     else:
-
-        try:
-            del login_session['access_token']
-
-        except:
-            failed = True
-
-        try:
-            del login_session['username']
-        except:
-            failed = True
-
-        try:
-            del login_session['state']
-        except:
-            failed = True
-
-        try:
-            del login_session['user_id']
-        except:
-            failed = True
-
-        try:
-            del login_session['gplus_id']
-        except:
-            failed = True
-
-        try:
-            del login_session['email']
-        except:
-            failed = True
-
-        if failed is True:
-            failed = True
-
-        if failed is False:
-            failed = False
-
-        # del login_session['access_token']
-        # For whatever reason, the given token was invalid.
         return preLogin()
 
 
