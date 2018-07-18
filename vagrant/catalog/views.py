@@ -24,8 +24,10 @@ print(CLIENT_SECRET)
 APPLICATION_NAME = "Udacity Catalog App"
 app = Flask(__name__)
 blueprint = make_google_blueprint(
-    client_id=CLIENT_ID,
-    client_secret= CLIENT_SECRET,
+    client_id= json.loads(
+            open('client_secrets.json', 'r').read())['web']['client_id'],
+    client_secret= json.loads(
+            open('client_secrets.json', 'r').read())['web']['client_secret'],
     scope=["profile", "email"]
 )
 app.register_blueprint(blueprint, url_prefix="/login")
